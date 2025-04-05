@@ -7,4 +7,4 @@
 
 [all:vars]
 ansible_user=ubuntu
-ansible_ssh_common_args='-o ProxyJump=ubuntu@141.94.104.189'
+ansible_ssh_common_args='-o ProxyJump=ubuntu@141.94.104.189' #adapt with bastion IP address

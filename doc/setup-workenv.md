@@ -24,6 +24,8 @@ https://help.ovhcloud.com/csm/fr-public-cloud-compute-prepare-openstack-api-envi
 
 ### Import OpenStack token
 
+
+TODO: expliquer comment générer le fichier à partir des informations fournies. Peut-être une partie setup credentials
 ```bash
 source openrc.sh
 ```
