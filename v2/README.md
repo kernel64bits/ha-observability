@@ -1,7 +1,7 @@
 # Introduction
-Let's automate what we did in v1 using terraform. I also added the following improvements: 
-- Setup DNS server in the subnet ressource
-- node-exporter
+Let's automate what we did in v1 using terraform and Ansible. I also added the following improvements: 
+- Setup DNS server in the subnet ressource (so I don't have to configure systemd-resolved on servers)
+- node-exporter is now hosted on the bastion server
 
 # Setup
 ## Provision the infrastructure
@@ -37,13 +37,11 @@ ip route del default via 10.0.0.1
 
 ## Ansible
 
-Run the following command to install 
+Run the following command to configure the virtual_machines: 
 
 ```bash
 ansible-playbook -i inventory/hosts global-config.yml node-exporter.yml prometheus.yml
 ```
 
-# Use
-```bash
-
-```
+# Access metrics
+Same as before, setup a SOCKS proxy and prometheus is available on http://10.0.0.20:9090
