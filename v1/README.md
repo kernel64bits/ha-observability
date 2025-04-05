@@ -1,17 +1,19 @@
- # Introduction
-
+ # Version 1
+ 
+ ## Introduction
  Setup basic infrastructure wit 2 servers:
  - Bastion
  - Prometheus server fetching its own metrics
 
  # Setup
-
+ ## List resources
 ```bash
 openstack flavor list
 openstack network list # list network
 openstack image list # On va prendre c3d02215-1b96-41b9-9854-4244f9c32c7b (ubuntu 24)
 ```
 
+## Network
 ```bash
 # setup keypair
 openstack keypair create --public-key ~/.ssh/id_ed25519.pub mykey
@@ -27,7 +29,7 @@ openstack router add subnet myrouter myprivatenet
 openstack router set --external-gateway Ext-Net myrouter
 ```
 
-## Setup bastion
+## Bastion
 
 ### Create server
 ```bash
@@ -37,20 +39,18 @@ openstack server list # list existing server, get ip address
 
 ### Other setup
 ```bash
-apt install -y tinyproxy #install tinyproxy
-
 # Setup SOCKS proxy
 ssh -D 1337 -q -C -N ubuntu@147.135.140.128
 #https://ma.ttias.be/socks-proxy-linux-ssh-bypass-content-filters/
 ```
 
-## Setup Prometheus/Grafana
+## Setup Prometheus
 ### Create server
 ```bash
 openstack server create --flavor d2-2 --image c3d02215-1b96-41b9-9854-4244f9c32c7b --key-name mykey --network mynetwork promgraf
 ```
 
-### 
+### Configure the server
 ```bash
 ssh -J ubuntu@91.134.30.33 ubuntu@10.0.0.164 # ssh using the bastion
 
