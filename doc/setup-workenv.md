@@ -30,4 +30,26 @@ source openrc.sh
 
 ## Setup Terraform
 
+### Install Terraform
+
 https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
+
+### Credentials setup
+
+Dire ce qui est attendu dans le dossier credentials
+
+## Setup ansible
+
+```bash
+# Use the same python venc than for openstack
+python3 -m venv env
+python3 -m pip install ansible
+```
+
+## Setup SSH config
+Add the following lines to _~/.ssh/config_
+```
+Host *
+    StrictHostKeyChecking no
+    User ubuntu
+```
