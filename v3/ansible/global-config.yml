@@ -1,0 +1,7 @@
+- hosts: all
+  tasks:
+  - name: setup SSH key
+    ansible.posix.authorized_key:
+      user: ubuntu
+      key: "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBADJw7M15uB0WUOByRSVDHqah7Xoat+KE80MQChU3zU5BS5ekdpMSreA0+BB4VaXFDeAG5y/ZmaNBM7e6ixs0w5DmAE2H4Nlk5kVbvrQdbAZVG3mn+85dYzZBqISmve/hlOrn2NiHN0b8bHQveJW7ys1o6t/RkgOrcNMSMyDaiyGiH9iuA== observability-int@zpub:1641904424"
+      state: present
