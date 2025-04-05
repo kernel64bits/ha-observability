@@ -1,0 +1,59 @@
+- hosts: prometheus
+  tasks:
+  - name: Download Prometheus archive
+    get_url:
+      url: https://github.com/prometheus/prometheus/releases/download/v2.53.4/prometheus-2.53.4.linux-amd64.tar.gz
+      dest: /tmp/prometheus.tar.gz
+      mode: '0644'
+
+  - name: Extract Prometheus archive
+    unarchive:
+      src: /tmp/prometheus.tar.gz
+      dest: /opt/
+      remote_src: yes
+      owner: root
+      group: root
+    become: true
+
+  - name: Create systemd service for prometheus
+    copy:
+      dest: /etc/systemd/system/prometheus.service
+      content: |
+        [Unit]
+        Description=Node Exporter
+        After=network.target
+
+        [Service]
+        ExecStart=/opt/prometheus-2.53.4.linux-amd64/prometheus \
+          --config.file=/opt/prometheus-2.53.4.linux-amd64/prometheus.yml \
+          --storage.tsdb.path=/opt/prometheus-2.53.4.linux-amd64/data \
+          --storage.tsdb.retention.time=30d
+        Restart=always
+        User=root
+        Group=root
+
+        [Install]
+        WantedBy=multi-user.target
+      mode: '0644'
+    become: true
+
+  - name: Create prometheus config file
+    copy:
+      src: files/prometheus.yml   # path relative to your playbook or role
+      dest: /opt/prometheus-2.53.4.linux-amd64/prometheus.yml
+      mode: '0644'
+      owner: root
+      group: root
+    become: true
+
+  - name: Reload systemd to register new service
+    systemd:
+      daemon_reload: yes
+    become: true
+
+  - name: Enable and start prometheus service
+    systemd:
+      name: prometheus
+      enabled: yes
+      state: started
+    become: true
