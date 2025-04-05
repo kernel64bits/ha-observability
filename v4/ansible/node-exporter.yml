@@ -1,0 +1,45 @@
+- hosts: prometheus
+  tasks:
+  - name: Download node-exporter archive
+    get_url:
+      url: https://github.com/prometheus/node_exporter/releases/download/v1.9.1/node_exporter-1.9.1.linux-amd64.tar.gz
+      dest: /tmp/node_exporter.tar.gz
+      mode: '0644'
+
+  - name: Extract node-exporter archive
+    unarchive:
+      src: /tmp/node_exporter.tar.gz
+      dest: /opt/
+      remote_src: yes
+    become: true
+
+  - name: Create systemd service for node_exporter
+    copy:
+      dest: /etc/systemd/system/node_exporter.service
+      content: |
+        [Unit]
+        Description=Node Exporter
+        After=network.target
+
+        [Service]
+        ExecStart=/opt/node_exporter-1.9.1.linux-amd64/node_exporter
+        Restart=always
+        User=nobody
+        Group=nogroup
+
+        [Install]
+        WantedBy=multi-user.target
+      mode: '0644'
+    become: true
+
+  - name: Reload systemd to register new service
+    systemd:
+      daemon_reload: yes
+    become: true
+
+  - name: Enable and start node_exporter service
+    systemd:
+      name: node_exporter
+      enabled: yes
+      state: started
+    become: true

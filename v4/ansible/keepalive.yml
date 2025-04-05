@@ -1,0 +1,66 @@
+- hosts: prometheus
+  tasks:
+    - name: Install keepalived
+      apt:
+        name: keepalived
+        state: present
+        update_cache: yes
+      become: true
+
+- hosts: 10.0.0.20
+  tasks:
+    - name: Setup master keepalived node
+      copy:
+        dest: /etc/keepalived/keepalived.conf
+        content: |
+          vrrp_instance VI_1 {
+            state MASTER
+            interface ens3
+            virtual_router_id 51
+            priority 101
+            advert_int 1
+            authentication {
+                auth_type PASS
+                auth_pass 12345
+            }
+            virtual_ipaddress {
+                10.0.0.22
+            }
+            notify_master "systemctl restart prometheus"
+            notify_backup "systemctl stop prometheus"
+          }
+        mode: '0644'
+      become: true
+
+- hosts: 10.0.0.21
+  tasks:
+    - name: Setup backup keepalived node
+      copy:
+        dest: /etc/keepalived/keepalived.conf
+        content: |
+          vrrp_instance VI_1 {
+            state BACKUP
+            interface ens3
+            virtual_router_id 51
+            priority 100
+            advert_int 1
+            authentication {
+                auth_type PASS
+                auth_pass 12345
+            }
+            virtual_ipaddress {
+                10.0.0.22
+            }
+            notify_master "systemctl restart prometheus"
+            notify_backup "systemctl stop prometheus"
+          }
+        mode: '0644'
+      become: true
+
+- hosts: prometheus
+  tasks:
+  - name: Restart Keepalived service
+    ansible.builtin.systemd:
+      name: keepalived
+      state: restarted
+    become: true
