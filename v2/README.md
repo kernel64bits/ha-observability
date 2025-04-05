@@ -43,5 +43,7 @@ Run the following command to configure the virtual_machines:
 ansible-playbook -i inventory/hosts global-config.yml node-exporter.yml prometheus.yml
 ```
 
+NB: Do not forget to adapt the bastion public IPv4 address in ansible inventory
+
 # Access metrics
 Same as before, setup a SOCKS proxy and prometheus is available on http://10.0.0.20:9090
