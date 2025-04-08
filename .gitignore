@@ -1,3 +1,4 @@
 /credentials/*
 .terraform*
 terraform.tfstate.d
+.DS_Store

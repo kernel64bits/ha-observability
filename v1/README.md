@@ -10,7 +10,7 @@
 ```bash
 openstack flavor list
 openstack network list # list network
-openstack image list # On va prendre c3d02215-1b96-41b9-9854-4244f9c32c7b (ubuntu 24)
+openstack image list # Let's choose c3d02215-1b96-41b9-9854-4244f9c32c7b (Ubuntu 24)
 ```
 
 ## Network
@@ -30,19 +30,23 @@ openstack router set --external-gateway Ext-Net myrouter
 ```
 
 ## Bastion
-
 ### Create server
 ```bash
 openstack server create --flavor d2-2 --image c3d02215-1b96-41b9-9854-4244f9c32c7b --key-name mykey --network Ext-Net --network mynetwork bastion # a ameliorer pour pouvoir choisir les adresses IP
 openstack server list # list existing server, get ip address
 ```
 
-### Other setup
+### Setup a SOCKS Proxy
+A simple way to access a private IP on a remote network from a web browser (without having to setup a VPN) is by using a SOCKS proxy over an SSH tunnel.
+
+#### Setup the SSH tunnel
 ```bash
 # Setup SOCKS proxy
-ssh -D 1337 -q -C -N ubuntu@147.135.140.128
-#https://ma.ttias.be/socks-proxy-linux-ssh-bypass-content-filters/
+ssh -D 1337 -q -C -N ubuntu@<bastion_public_ip>
 ```
+
+#### Setup the SOCKS proxy on your browser
+You can follow [this tutorial](https://ma.ttias.be/socks-proxy-linux-ssh-bypass-content-filters/)
 
 ## Setup Prometheus
 ### Create server
@@ -50,11 +54,16 @@ ssh -D 1337 -q -C -N ubuntu@147.135.140.128
 openstack server create --flavor d2-2 --image c3d02215-1b96-41b9-9854-4244f9c32c7b --key-name mykey --network mynetwork promgraf
 ```
 
+### Fetch Prometheus private IP address
+```bash
+openstack server list
+```
+
 ### Configure the server
 ```bash
-ssh -J ubuntu@91.134.30.33 ubuntu@10.0.0.164 # ssh using the bastion
+ssh -J ubuntu@<bastion_public_IP> ubuntu@<prometheus_IP> # ssh using the bastion
 
-# Setup DNS
+# Configure DNS resolution
 echo "DNS=8.8.8.8" >> /etc/systemd/resolved.conf; systemctl restart systemd-resolved
 
 ## Setup node exporter
@@ -67,5 +76,8 @@ tar -xzf ./node_exporter-*.tar.gz
 wget https://github.com/prometheus/prometheus/releases/download/v2.53.4/prometheus-2.53.4.linux-amd64.tar.gz
 tar -xzf ./prometheus*.tar.gz
 ./prometheus*/prometheus
-# you can access ui on port 9090, you may forever have a look at the metric node_memory_MemAvailable_bytes
+# you can access ui on port 9090, you may for example have a look at the metric node_memory_MemAvailable_bytes
 ```
+
+## Access services
+Node exporter and Prometheus are available from your web browser (with the SOCKS proxy configured) respectively on ports 9100 and 9090.

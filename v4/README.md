@@ -42,16 +42,22 @@ terraform apply
 **NB:** Since the VRRP is not reachable you have to specify the correct server IP
 
 ## Availablility
-We now have a fully redunded solution. When server1 is offline, server2 takes it place
+We now have a fully redunded solution. When server1 is offline, server2 takes it place.
+
+### Possible outages and solutions
+- Reboot of the bastion -> SSH using IPv6 and remove the problematic route
+- Both servers start writing at the same time -> I did not perform much test but it seems to be working, although is might cause more issues at scale. I could add more security checks, maybe with lock files.
+- Data saturation -> increase storage space (change instance type or use volumes). We will also need to clean old data or aggregate it to prevent infinite growth.
+- 1 server shuts down -> the service should keep working (module the lack of VRRP IP switch). Rebooting the server should be enough to go back to the initial situation.
 
 ## Scalability
-Scalability is limited, but it could quite easily be addressed by moving the GlusterFS storage to OpenStack volumes
+Scalability is limited because of disk storage, but it could quite easily be addressed by moving the GlusterFS storage to OpenStack volumes
 
 # Improvements ideas for the next version
 Here are a couple of ideas that could be implemented in a future v5:
 - Setup a load balancer (or fix VRRP) to make the service availble from a single IP address
 - Increase the GlusterFS cluster size (to 3 nodes or more)
-- Host the GlusterFS data on OpenStack volumes to increase scalability
+- Host the GlusterFS data on OpenStack volumes to increase scalability and prevent data loss in case of disaster fFire, ...)
 - Find a way to fix the bastion route issue
-- Replace Ceph by 
+- Replace GlusterFS by Ceph
 
