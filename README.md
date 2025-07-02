@@ -1,6 +1,6 @@
 # HA-observability
 ## Introduction
-The goal of this project was to setup a scalable and highly available timeseries database with a limited amount of time (a couple of hours within a week).
+I started this project as a SRE technical interview at OVHCloud. The goal was to setup a scalable and highly available timeseries database with a limited amount of time (a couple of hours within a week).
 
 ### Working method
 I am making the choice to work in an incremental way by starting with a very simple possible solution and improving it step by step. While this may not be the most efficient solution for a sprint project like that, it greatly increases my chances of delivering something that works and thus producing value.
